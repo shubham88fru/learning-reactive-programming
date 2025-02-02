@@ -1,0 +1,20 @@
+package com.learning.springframeworkreactive;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@EqualsAndHashCode
+public class CartItem {
+    private Item item;
+    private int quantity;
+
+    private CartItem() {}
+
+    private CartItem(Item item) {
+        this.item = item;
+        this.quantity = 1;
+    }
+}

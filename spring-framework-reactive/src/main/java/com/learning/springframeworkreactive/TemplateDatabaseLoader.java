@@ -13,6 +13,7 @@ public class TemplateDatabaseLoader {
         return args -> {
             System.out.println("Initializing database...");
             mongoOperations.dropCollection(Item.class);
+            mongoOperations.dropCollection(Cart.class);
             mongoOperations.save(new Item("Alarm clock", 19.99));
             mongoOperations.save(new Item("Television", 24.99));
         };

@@ -12,38 +12,20 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 public class HomeController {
 
-    private final ItemRepository itemRepository;
-    private final CartRepository cartRepository;
+    private final CartService cartService;
+    private final ItemService itemService;
 
     @GetMapping
     public Mono<Rendering> home() {
         return Mono.just(Rendering.view("home.html")
-                .modelAttribute("items", itemRepository.findAll())
-                .modelAttribute("cart", cartRepository.findById("My Cart")
+                .modelAttribute("items", itemService.findAll())
+                .modelAttribute("cart", cartService.findById("My Cart")
                         .defaultIfEmpty(new Cart("My Cart")))
                 .build());
     }
 
     @PostMapping("/add/{id}")
     public Mono<String> addToCart(@PathVariable String id) {
-        return cartRepository.findById("My Cart")
-                .defaultIfEmpty(new Cart("My Cart"))
-                .flatMap(cart -> cart.getCartItems().stream()
-                        .filter(cartItem -> cartItem.getItem().getId().equals(id))
-                        .findAny()
-                        .map(cartItem -> {
-                            cartItem.increment();
-                            return Mono.just(cart);
-                        })
-                        .orElseGet(() -> {
-                            return itemRepository.findById(id)
-                                    .map(item -> new CartItem(item))
-                                    .map(cartItem -> {
-                                        cart.getCartItems().add(cartItem);
-                                        return cart;
-                                    });
-                        }))
-                .flatMap(cart -> cartRepository.save(cart))
-                .thenReturn("redirect:/");
+        return cartService.addToCart(id).thenReturn("redirect:/");
     }
 }

@@ -12,6 +12,7 @@ public class Item {
     private @Id String id;
     private String name;
     private double price;
+    private String description;
     private Item() {}
 
     public Item(String name, double price) {

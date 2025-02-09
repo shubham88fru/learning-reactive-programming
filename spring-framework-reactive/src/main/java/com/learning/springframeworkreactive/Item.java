@@ -15,8 +15,9 @@ public class Item {
     private String description;
     private Item() {}
 
-    public Item(String name, double price) {
+    public Item(String name, String description, double price) {
         this.name = name;
         this.price = price;
+        this.description = description;
     }
 }

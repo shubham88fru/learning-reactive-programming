@@ -9,7 +9,7 @@ import org.springframework.context.event.EventListener;
 
 import java.sql.SQLException;
 
-@Profile({"dev", "test"})
+@Profile({"!prod"})
 @Configuration
 public class H2ConsoleConfiguration {
     private Server server;

@@ -1,10 +1,9 @@
 package com.learning.reactive.web.users.presentation;
 
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -14,7 +13,7 @@ import java.util.UUID;
 public class UserController {
 
     @PostMapping
-    public Mono<UserRest> createUser(@RequestBody @Valid Mono<CreateUserRequest> createUserRequest) {
+    public Mono<ResponseEntity<UserRest>> createUser(@RequestBody @Valid Mono<CreateUserRequest> createUserRequest) {
 
         /*
             ----------
@@ -27,6 +26,11 @@ public class UserController {
         return createUserRequest.map((request) -> {
             return new UserRest(UUID.randomUUID(), request.getFirstName(),
                     request.getLastName(), request.getEmail());
-        });
+        }).map((userRest) -> ResponseEntity.status(HttpStatus.CREATED).body(userRest));
+    }
+
+    @GetMapping("/{userId}")
+    public Mono<UserRest> getUser(@PathVariable UUID userId) {
+        return Mono.just(new UserRest(userId, "Shubham", "Singh", "shubham@gmail.com"));
     }
 }

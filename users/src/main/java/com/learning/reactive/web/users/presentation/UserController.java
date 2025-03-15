@@ -52,8 +52,14 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public Mono<UserRest> getUser(@PathVariable UUID userId) {
-        return Mono.just(new UserRest(userId, "Shubham", "Singh", "shubham@gmail.com"));
+    public Mono<ResponseEntity<UserRest>> getUser(@PathVariable UUID userId) {
+
+        return userService.getUserById(userId)
+                .map(ResponseEntity::ok)
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build())); //return a different mono if og mono is null/empty.
+        /*
+            return Mono.just(new UserRest(userId, "Shubham", "Singh", "shubham@gmail.com"));
+         */
     }
 
     @GetMapping

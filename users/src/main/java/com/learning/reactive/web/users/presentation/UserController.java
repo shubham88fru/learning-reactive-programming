@@ -1,17 +1,23 @@
 package com.learning.reactive.web.users.presentation;
 
+import com.learning.reactive.web.users.service.UserService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
+@AllArgsConstructor
 public class UserController {
+
+    private final UserService userService;
 
     @PostMapping
     public Mono<ResponseEntity<UserRest>> createUser(@RequestBody @Valid Mono<CreateUserRequest> createUserRequest) {
@@ -29,10 +35,20 @@ public class UserController {
             DECLARATIVE/FUNCTIONAL/NON-BLOCKING
             -----------------------------------
          */
-        return createUserRequest.map((request) -> {
-            return new UserRest(UUID.randomUUID(), request.getFirstName(),
+        return userService.createUser(createUserRequest)
+                .map(userRest -> ResponseEntity
+                        .status(HttpStatus.CREATED)
+                        .location(URI.create("/users/" + userRest.getId()))
+                        .body(userRest));
+
+
+
+        /*
+            return createUserRequest.map((request) -> {
+                return new UserRest(UUID.randomUUID(), request.getFirstName(),
                     request.getLastName(), request.getEmail());
-        }).map((userRest) -> ResponseEntity.status(HttpStatus.CREATED).body(userRest));
+            }).map((userRest) -> ResponseEntity.status(HttpStatus.CREATED).body(userRest));
+         */
     }
 
     @GetMapping("/{userId}")
@@ -41,8 +57,8 @@ public class UserController {
     }
 
     @GetMapping
-    public Flux<UserRest> getUsers(@RequestParam(value="offset", defaultValue = "0") int offset,
-                                   @RequestParam(value="limit", defaultValue = "50") int limit) {
+    public Flux<UserRest> getUsers(@RequestParam(value = "offset", defaultValue = "0") int offset,
+                                   @RequestParam(value = "limit", defaultValue = "50") int limit) {
         return Flux.just(
                 new UserRest(UUID.randomUUID(), "Shubham", "Singh", "test@test.com"),
                 new UserRest(UUID.randomUUID(), "Shubham2", "Singh2", "test2@test.com"),

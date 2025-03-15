@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public Mono<UserRest> crateUser(Mono<CreateUserRequest> createUserRequestMono) {
+    public Mono<UserRest> createUser(Mono<CreateUserRequest> createUserRequestMono) {
         //create user entity object
 
 

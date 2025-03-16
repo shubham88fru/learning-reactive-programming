@@ -6,9 +6,13 @@ import com.learning.reactive.web.users.presentation.CreateUserRequest;
 import com.learning.reactive.web.users.presentation.UserRest;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -29,6 +33,16 @@ public class UserServiceImpl implements UserService {
                 .map(this::convertToEntity)
                 .flatMap(userRepository::save) //flatmap flattens nested monos into a single Mono.
                 .map(this::convertToRest);
+                //.onErrorMap(DuplicateKeyException.class,
+                //ex -> new ResponseStatusException(HttpStatus.CONFLICT, "User already exists"));
+//                .onErrorMap(throwable -> {//executes when error is thrown at a step above.
+//                    if (throwable instanceof DuplicateKeyException) {
+//                        return new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");
+//                    } else if (throwable instanceof DataIntegrityViolationException) {
+//                        return new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request");
+//                    }
+//                    return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+//                });
     }
 
     @Override

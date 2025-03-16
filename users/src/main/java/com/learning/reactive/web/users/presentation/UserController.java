@@ -63,12 +63,17 @@ public class UserController {
     }
 
     @GetMapping
-    public Flux<UserRest> getUsers(@RequestParam(value = "offset", defaultValue = "0") int offset,
+    public Flux<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                                    @RequestParam(value = "limit", defaultValue = "50") int limit) {
-        return Flux.just(
-                new UserRest(UUID.randomUUID(), "Shubham", "Singh", "test@test.com"),
-                new UserRest(UUID.randomUUID(), "Shubham2", "Singh2", "test2@test.com"),
-                new UserRest(UUID.randomUUID(), "Shubham3", "Singh3", "test3@test.com")
-        );
+
+        return userService.findAll(page, limit);
+
+        /*
+            return Flux.just(
+                    new UserRest(UUID.randomUUID(), "Shubham", "Singh", "test@test.com"),
+                    new UserRest(UUID.randomUUID(), "Shubham2", "Singh2", "test2@test.com"),
+                    new UserRest(UUID.randomUUID(), "Shubham3", "Singh3", "test3@test.com")
+            );
+         */
     }
 }

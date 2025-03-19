@@ -1,4 +1,4 @@
-package com.learning.reactive.web.users.presentation;
+package com.learning.reactive.web.users.presentation.model;
 
 
 import jakarta.validation.constraints.Email;

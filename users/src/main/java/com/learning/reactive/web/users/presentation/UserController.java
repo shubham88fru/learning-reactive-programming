@@ -1,5 +1,7 @@
 package com.learning.reactive.web.users.presentation;
 
+import com.learning.reactive.web.users.presentation.model.CreateUserRequest;
+import com.learning.reactive.web.users.presentation.model.UserRest;
 import com.learning.reactive.web.users.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

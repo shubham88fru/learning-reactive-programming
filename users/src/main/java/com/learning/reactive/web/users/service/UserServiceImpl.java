@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Sinks.Many<UserRest> usersSink;
 
     @Override
     public Mono<UserRest> createUser(Mono<CreateUserRequest> createUserRequestMono) {
@@ -35,7 +37,8 @@ public class UserServiceImpl implements UserService {
                 //.map(this::convertToEntity)
                 .flatMap(this::convertToEntity)
                 .flatMap(userRepository::save) //flatmap flattens nested monos into a single Mono.
-                .map(this::convertToRest);
+                .map(this::convertToRest)
+                .doOnSuccess(usersSink::tryEmitNext);
                 //.onErrorMap(DuplicateKeyException.class,
                 //ex -> new ResponseStatusException(HttpStatus.CONFLICT, "User already exists"));
 //                .onErrorMap(throwable -> {//executes when error is thrown at a step above.
@@ -57,6 +60,11 @@ public class UserServiceImpl implements UserService {
     public Flux<UserRest> findAll(int page, int limit) {
         Pageable pageable = PageRequest.of(page, limit);
         return userRepository.findAllBy(pageable).map(this::convertToRest);
+    }
+
+    @Override
+    public Flux<UserRest> streamUser() {
+        return usersSink.asFlux().publish().autoConnect(1);
     }
 
     private Mono<UserEntity> convertToEntity(CreateUserRequest createUserRequest) {

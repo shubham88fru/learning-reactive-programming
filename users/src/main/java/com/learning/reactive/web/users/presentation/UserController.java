@@ -6,6 +6,7 @@ import com.learning.reactive.web.users.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -79,5 +80,10 @@ public class UserController {
                     new UserRest(UUID.randomUUID(), "Shubham3", "Singh3", "test3@test.com")
             );
          */
+    }
+
+    @GetMapping(value="/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<UserRest> streamUsers() {
+        return userService.streamUser();
     }
 }
